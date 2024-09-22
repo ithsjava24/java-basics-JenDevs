@@ -10,14 +10,14 @@ public class App {
     public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
 
-        int [] priser = new int[24];
+        int [] prices = new int[24];
 
-        String val;
+        String choice;
         do {
             showMenu();
-            val = sc.nextLine().toLowerCase();
-            hanteraVal(val, sc, priser);
-        } while (!val.equals("e"));
+            choice = sc.nextLine().toLowerCase();
+            handleChoice(choice, sc, prices);
+        } while (!choice.equals("e"));
 
     }
 
@@ -32,76 +32,78 @@ public class App {
                 e. Avsluta
                 """;
 
+
         System.out.print(menu);
     }
 
-    public static void hanteraVal(String val, Scanner sc, int [] priser){
-        switch (val) {
-            case "1" -> inmatningElpriser(sc, priser);
-            case "2" -> minMaxMedel(priser);
-            case "3" -> sorteraPriser(priser); // rensa i kod, ta bort onödigt
-            case "4" -> bestChargingTime(priser);
+    public static void handleChoice(String choice, Scanner sc, int [] prices){
+        switch (choice) {
+            case "1" -> inputElectricityPrices(sc, prices);
+            case "2" -> minMaxAverage(prices);
+            case "3" -> sortPrices(prices);
+            case "4" -> bestChargingTime(prices);
             case "e" -> System.out.print("Programmet avlusas");
             default ->
-                    System.out.print("Felaktigt val, gör ett nytt val\n\n");
+                    System.out.print("Felaktigt choice, gör ett nytt choice\n\n");
         }
     }
 
-    public static void inmatningElpriser(Scanner sc, int[]priser) {
-        for(int i = 0; i < priser.length; i++) {
+    public static void inputElectricityPrices(Scanner sc, int[]prices) {
+        System.out.print("Gör din inmatning av elpriser, timme för timme. Ange priset i öre/kWh.\n");
+        for(int i = 0; i < prices.length; i++) {
             System.out.printf("%02d-%02d " ,i, (i+1)%24);
-            priser[i] = sc.nextInt();
+            prices[i] = sc.nextInt();
             sc.nextLine();
         }
     }
 
-    public static void minMaxMedel(int[] priser){
-        int min = priser[0];
-        int max = priser[0];
+    public static void minMaxAverage(int[] prices){
+        int min = prices[0];
+        int max = prices[0];
         int minIndex = 0;
         int maxIndex = 0;
         int sum = 0;
 
-        for(int i = 0; i < priser.length; i++){
-            if(priser[i] < min){
-                min = priser[i];
+        for(int i = 0; i < prices.length; i++){
+            if(prices[i] < min){
+                min = prices[i];
                 minIndex = i;
             }
-            if(priser[i] > max){
-                max = priser[i];
+            if(prices[i] > max){
+                max = prices[i];
                 maxIndex = i;
             }
-            sum += priser[i];
+            sum += prices[i];
         }
 
-        double average =  (double) sum / priser.length;
+        double average =  (double) sum / prices.length;
 
-        double[] resultat = {min, minIndex, max, maxIndex, average};
-        System.out.printf(Locale.forLanguageTag(("sv-SE")),"Lägsta pris: %02d-%02d, %d öre/kWh\n", (int) resultat[1], ((int) resultat[1] + 1) % 24, (int) resultat[0]);
-        System.out.printf(Locale.forLanguageTag(("sv-SE")),"Högsta pris: %02d-%02d, %d öre/kWh\n", (int) resultat[3], ((int) resultat[3] + 1) % 24, (int) resultat[2]);
-        System.out.printf(Locale.forLanguageTag(("sv-SE")),"Medelpris: %.2f öre/kWh\n", resultat[4]);
+        double[] results = {min, minIndex, max, maxIndex, average};
+        System.out.printf(Locale.forLanguageTag(("sv-SE")),"Lägsta pris: %02d-%02d, %d öre/kWh\n", (int) results[1], ((int) results[1] + 1) % 24, (int) results[0]);
+        System.out.printf(Locale.forLanguageTag(("sv-SE")),"Högsta pris: %02d-%02d, %d öre/kWh\n", (int) results[3], ((int) results[3] + 1) % 24, (int) results[2]);
+        System.out.printf(Locale.forLanguageTag(("sv-SE")),"Medelpris: %.2f öre/kWh\n", results[4]);
 
     }
 
-    public static void sorteraPriser (int [] priser) {
-        Integer [] index = new Integer[priser.length];
+    public static void sortPrices(int [] prices) {
+        Integer [] index = new Integer[prices.length];
 
-        for(int i = 0; i < priser.length; i++){
+        for(int i = 0; i < prices.length; i++){
             index[i] = i;
         }
 
-        Arrays.sort(index, Comparator.comparingInt(i -> priser[(int) i]).reversed());
+        Arrays.sort(index, Comparator.comparingInt(i -> prices[(int) i]).reversed());
         for(int i : index){
-            System.out.printf(Locale.forLanguageTag(("sv-SE")), "%02d-%02d %d öre\n", i, (i + 1), priser[i]);
+            System.out.printf(Locale.forLanguageTag(("sv-SE")), "%02d-%02d %d öre\n", i, (i + 1), prices[i]);
         }
     }
 
-    public static void bestChargingTime(int [] priser){
+    public static void bestChargingTime(int [] prices){
         int minPrice = Integer.MAX_VALUE;
         int startHour = 0;
 
-        for(int i = 0; i <= priser.length-4; i++){
-            int nuvarandePris = priser[i] + priser[i+1] + priser[i+2] + priser[i+3];
+        for(int i = 0; i <= prices.length-4; i++){
+            int nuvarandePris = prices[i] + prices[i+1] + prices[i+2] + prices[i+3];
 
             if(nuvarandePris < minPrice){
                 minPrice = nuvarandePris;
